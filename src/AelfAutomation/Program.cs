@@ -34,7 +34,8 @@ namespace AelfAutomation
                     await new AddSpecialSeed(_config, _accountHolders).DoAdd(accountAddress, type, pageString);
                     break;
                 case "SpecialSeed.check" : 
-                    await new AddSpecialSeed(_config, _accountHolders).DoCheck();
+                    var resultFile = args[1]; // result file to check
+                    await new AddSpecialSeed(_config, _accountHolders).DoCheck(resultFile);
                     break;
                 default: throw new Exception($"Invalid cmd param: {cmd}");
             }

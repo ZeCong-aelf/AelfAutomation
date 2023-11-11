@@ -16,11 +16,13 @@ public abstract class ContractInvoker
 {
 
     protected AElfClient Client;
+    protected Dictionary<string, string> ContractAddress;
     protected readonly JsonSerializerSettings Settings = new JsonSerializerSettings();
 
     protected ContractInvoker(IConfiguration config)
     {
         Client = new AElfClient(config.GetSection("nodeUrl").Get<string>());
+        ContractAddress = config.GetSection("ContractAddress").Get<Dictionary<string, string>>();
     }
 
 

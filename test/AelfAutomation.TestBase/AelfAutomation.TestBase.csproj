@@ -9,7 +9,7 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\..\src\AelfAutomation\ProjectCopyServer.Domain.csproj" />
+        <ProjectReference Include="..\..\src\AelfAutomation\AelfAutomation.csproj" />
     </ItemGroup>
 
 

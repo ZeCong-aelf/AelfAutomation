@@ -54,8 +54,4 @@
         </ContractReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="SymbolRegistrar\Dto\" />
-    </ItemGroup>
-
 </Project>

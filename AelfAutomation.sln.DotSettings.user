@@ -2,4 +2,9 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/nianzecong/.nuget/packages/nethereum.keystore/3.8.0/lib/netcoreapp3.1/Nethereum.KeyStore.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=784cf516_002Da983_002D4acc_002Daebf_002Dd2e557e821b1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Run" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::91853F21-9CD9-4132-BC29-A7D5D84FFFE7::net7.0::AelfAutomation.SymbolRegistrar.ProgramTest.Run&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Aelf/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
