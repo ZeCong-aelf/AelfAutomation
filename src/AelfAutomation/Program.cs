@@ -20,6 +20,7 @@ namespace AelfAutomation
         public static async Task Main(string[] args)
         {
             Console.WriteLine("start");
+            
             LoadConfigurations();
             LoadAccounts();
 
@@ -62,6 +63,23 @@ namespace AelfAutomation
                 var path = PathHelper.ResolvePath(keyFilePath + "/" + address + ".json");
                 using var textReader = File.OpenText(path);
                 var json = textReader.ReadToEnd();
+                
+                /* read password from console */
+                
+                // Console.Write($"input password of account {address}: ");
+                // string pwd = "";
+                // while (true)
+                // {
+                //     var key = Console.ReadKey(true);
+                //     if (key.Key == ConsoleKey.Enter)
+                //         break;
+                //     if (key.Key == ConsoleKey.Backspace && password.Length > 0)
+                //         pwd = pwd[0..^1];
+                //     else if (key.Key != ConsoleKey.Backspace)
+                //         pwd += key.KeyChar;
+                // }
+                // Console.WriteLine();
+
                 var privateKey = keyStoreService.DecryptKeyStoreFromJson(password, json);
                 Console.WriteLine($"Load account {address} success");
                 _accountHolders[address] = new AccountHolder(privateKey.ToHex());
