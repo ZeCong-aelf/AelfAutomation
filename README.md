@@ -34,9 +34,15 @@ Run Program.cs in IDE, with parameters
 AelfAutomation.dll SpecialSeed.add 2CpKfnoWTk69u6VySHMeuJvrX2hGrMw9pTyxcD4VM6Q28dJrhk uniq 2,4,5
 ```
 
-output file will like this:
+output file name will like this:
+
+`notable_result_2023_11_11_16_10_10`
+
+`notable_result_2023_11_11_16_10_10`
+
+output file content will like this:
 ```shell
-# page, fromWord, toWord, transactionHash
+# page, fromSymbol, toSymbol, transactionHash
 2,ARO,FEO,90589bec79316e9d58aae131645eca4de9e12e301679e3cc5912c6c99e59f386
 4,JET,MEL,aa03cb99e57d7fa293e3542e9fbe3cb305d6a3968be4d5d4678e95fd08f2d47a
 5,MEO,REB,77d4fa0c0c2a21c762c6f02cfef098f54b312c256c08e1c73a03e60b5d461b71
@@ -56,7 +62,7 @@ AelfAutomation.dll SpecialSeed.check uniq_result_2023_11_11_16_10_10
 console output result will like this:
 
 ```shell
-# page, fromWord, toWord, transactionHash, status, error-info
+# page, fromSymbol, toSymbol, transactionHash, status, error-info
 2,ARO,FEO,90589bec79316e9d58aae131645eca4de9e12e301679e3cc5912c6c99e59f386 status=NOTEXISTED, error=
 4,JET,MEL,aa03cb99e57d7fa293e3542e9fbe3cb305d6a3968be4d5d4678e95fd08f2d47a status=NOTEXISTED, error=
 5,MEO,REB,77d4fa0c0c2a21c762c6f02cfef098f54b312c256c08e1c73a03e60b5d461b71 status=MINED, error=
