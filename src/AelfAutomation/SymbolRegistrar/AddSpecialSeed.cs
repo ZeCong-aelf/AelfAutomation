@@ -26,6 +26,7 @@ public class AddSpecialSeed : ContractInvoker
     private string _notableFile;
     private string _uniqLogFile;
     private string _notableLogFile;
+    private int _pageSize;
 
     public AddSpecialSeed(IConfiguration config, Dictionary<string, AccountHolder> accountHolders) : base(config)
     {
@@ -37,6 +38,7 @@ public class AddSpecialSeed : ContractInvoker
         _notableFile = PathHelper.ResolvePath(configSection.GetSection("NotableFile").Get<string>());
         _uniqLogFile = PathHelper.ResolvePath(configSection.GetSection("UniqResultFile").Get<string>());
         _notableLogFile = PathHelper.ResolvePath(configSection.GetSection("NotableResultFile").Get<string>());
+        _pageSize = configSection.GetSection("PageSize").Get<int>();
     }
     
     public async Task DoAdd(string account, string type, string? pageString)
@@ -44,7 +46,7 @@ public class AddSpecialSeed : ContractInvoker
         var page = pageString?.Split(",").Select(p => p.SafeToInt(-1)).ToList() ?? new List<int>();
         AssertHelper.IsTrue(page.Count == 0 || page.Any(p => p > 0), "Invalid page");
 
-        const int pageSize = 100;
+        var pageSize = _pageSize;
         var allLines = await File.ReadAllLinesAsync(type == "uniq" ? _uniqFile : _notableFile);
         var totalPage = (allLines.Length + pageSize - 1) / pageSize;
         var resultLines = new List<string>();
@@ -58,8 +60,11 @@ public class AddSpecialSeed : ContractInvoker
                 .Select(w => Regex.Replace(w, @"\s+", "")) // remove all blank character
                 .Select(w => w.ToUpper()) // convert all letters uppercase
                 .Take(pageSize)
+                .Distinct()
                 .ToArray();
-            var res = await ProcessPage(account, pageLines, currentPage);
+            var res = type == "uniq"
+                ? await ProcessPageUniq(account, pageLines, currentPage)
+                : await ProcessPageNotable(account, pageLines, currentPage);
             resultLines.Add(res.ToResultLine());
 
             // test mode
@@ -71,7 +76,57 @@ public class AddSpecialSeed : ContractInvoker
         await File.WriteAllLinesAsync(resultFilePath, resultLines);
     }
 
-    private async Task<AddResult> ProcessPage(string account, string[] pageLines, int currentPage)
+    private async Task<AddResult> ProcessPageNotable(string account, string[] pageLines, int currentPage)
+    {
+        var accountExists = _accountHolders.TryGetValue(account, out var accountHolder);
+        AssertHelper.IsTrue(accountExists, $"Account {account} not exists");
+        
+        var specialList = new SpecialSeedList();
+
+        foreach (var symbol in pageLines)
+        {
+            specialList.Value.Add(new SpecialSeed
+            {
+                SeedType = SeedType.Notable,
+                AuctionType = AuctionType.English,
+                Symbol = symbol,
+                PriceAmount = 1000_0000_0000,
+                PriceSymbol = "ELF",
+                IssueChain = "ETH",
+                IssueChainContractAddress = "0x00"
+            });
+        }
+        
+        // create tx
+        var (txId, tx) =
+            CreateContractRawTransactionAsync(accountHolder,
+                Address.FromBase58(ContractAddress["Forest.SymbolRegistrarContract"]), "AddSpecialSeeds", specialList);
+
+        // send
+        var res = await Client.SendTransactionAsync(new SendTransactionInput
+        {
+            RawTransaction = tx.ToByteArray().ToHex()
+        });
+
+        // wait
+        await Task.Delay(1000);
+
+        // query result
+        var queryResult = await Client.GetTransactionResultAsync(txId.ToHex());
+
+        var addResult = new AddResult()
+        {
+            Page = currentPage,
+            FromWord = pageLines.First(),
+            ToWord = pageLines.Last(),
+            TransactionId = txId.ToHex()
+        };
+
+        Console.WriteLine($"Result: {addResult.ToResultLine()}, status: {queryResult?.Status}, error: {queryResult?.Error}");
+        return addResult;
+    }
+
+    private async Task<AddResult> ProcessPageUniq(string account, string[] pageLines, int currentPage)
     {
         var list = new UniqueSeedList();
         list.Symbols.AddRange(pageLines);
