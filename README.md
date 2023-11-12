@@ -49,10 +49,10 @@ output file content will like this:
 ```
 
 
-# Usage - Add special seed
+# Usage - Check special seed
 Run Program.cs in IDE, with parameters:
 
-- args[0]: command: "SpecialSeed.add"
+- args[0]: command: "SpecialSeed.check"
 - args[1]: result fileName
 
 ```shell
