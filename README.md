@@ -25,10 +25,10 @@ default keystore path is : `~/.local/share/aelf/keys`, you can change it in `app
 
 Run Program.cs in IDE, with parameters
 
-- args[0]: command: `"SpecialSeed.add"`
-- args[1]: sender
-- args[2]: type of SpecialSeed `"uniq"` or `"notable"`
-- args[3]: `[optional]` pages of data to **RESEND**, values joined with `"," `
+- `args[0]`: command: `"SpecialSeed.add"`
+- `args[1]`: sender
+- `args[2]`: type of SpecialSeed `"uniq"` or `"notable"`
+- `args[3]`: `[optional]` pages of data to **RESEND**, values joined with `"," `
 
 ```shell
 AelfAutomation.dll SpecialSeed.add 2CpKfnoWTk69u6VySHMeuJvrX2hGrMw9pTyxcD4VM6Q28dJrhk uniq 2,4,5
@@ -52,8 +52,8 @@ output file content will like this:
 # Usage - Check special seed
 Run Program.cs in IDE, with parameters:
 
-- args[0]: command: "SpecialSeed.check"
-- args[1]: result fileName
+- `args[0]`: command: "SpecialSeed.check"
+- `args[1]`: result fileName
 
 ```shell
 AelfAutomation.dll SpecialSeed.check uniq_result_2023_11_11_16_10_10
