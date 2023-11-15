@@ -20,7 +20,6 @@ namespace AelfAutomation.SymbolRegistrar;
 public class AddSpecialSeed : ContractInvoker
 {
     private IConfiguration _config;
-    private Dictionary<string, AccountHolder> _accountHolders;
 
     private string _uniqFile;
     private string _notableFile;
@@ -28,9 +27,8 @@ public class AddSpecialSeed : ContractInvoker
     private string _notableLogFile;
     private int _pageSize;
 
-    public AddSpecialSeed(IConfiguration config, Dictionary<string, AccountHolder> accountHolders) : base(config)
+    public AddSpecialSeed(IConfiguration config, Dictionary<string, AccountHolder> accountHolders) : base(config, accountHolders)
     {
-        _accountHolders = accountHolders;
         _config = config;
 
         var configSection = _config.GetSection("AddSpecialSeed");
@@ -78,7 +76,7 @@ public class AddSpecialSeed : ContractInvoker
 
     private async Task<AddResult> ProcessPageNotable(string account, string[] pageLines, int currentPage)
     {
-        var accountExists = _accountHolders.TryGetValue(account, out var accountHolder);
+        var accountExists = AccountHolders.TryGetValue(account, out var accountHolder);
         AssertHelper.IsTrue(accountExists, $"Account {account} not exists");
         
         var specialList = new SpecialSeedList();
@@ -98,8 +96,7 @@ public class AddSpecialSeed : ContractInvoker
         }
         
         // create tx
-        var (txId, tx) =
-            CreateContractRawTransactionAsync(accountHolder,
+        var (txId, tx) = await CreateContractRawTransactionAsync(accountHolder,
                 Address.FromBase58(ContractAddress["Forest.SymbolRegistrarContract"]), "AddSpecialSeeds", specialList);
 
         // send
@@ -130,12 +127,11 @@ public class AddSpecialSeed : ContractInvoker
     {
         var list = new UniqueSeedList();
         list.Symbols.AddRange(pageLines);
-        var accountExists = _accountHolders.TryGetValue(account, out var accountHolder);
+        var accountExists = AccountHolders.TryGetValue(account, out var accountHolder);
         AssertHelper.IsTrue(accountExists, $"Account {account} not exists");
 
         // create tx
-        var (txId, tx) =
-            CreateContractRawTransactionAsync(accountHolder,
+        var (txId, tx) = await CreateContractRawTransactionAsync(accountHolder,
                 Address.FromBase58(ContractAddress["Forest.SymbolRegistrarContract"]), "AddUniqueSeeds", list);
 
         // send

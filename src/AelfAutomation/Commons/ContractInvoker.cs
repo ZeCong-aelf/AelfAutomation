@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AElf;
 using AElf.Client;
 using AElf.Client.Dto;
@@ -14,26 +15,38 @@ namespace AelfAutomation.Commons;
 
 public abstract class ContractInvoker
 {
-
     protected AElfClient Client;
     protected Dictionary<string, string> ContractAddress;
-    protected readonly JsonSerializerSettings Settings = new JsonSerializerSettings();
+    protected Dictionary<string, AccountHolder> AccountHolders;
 
-    protected ContractInvoker(IConfiguration config)
+    protected static JsonSerializerSettings JsonSerializerSettings =
+        JsonSettingsBuilder.New().WithAElfTypesConverters().Build();
+
+    protected ContractInvoker(IConfiguration config, Dictionary<string, AccountHolder> accountHolders)
     {
+        AccountHolders = accountHolders;
         Client = new AElfClient(config.GetSection("nodeUrl").Get<string>());
         ContractAddress = config.GetSection("ContractAddress").Get<Dictionary<string, string>>();
     }
 
 
-    protected Tuple<Hash, Transaction> CreateContractRawTransactionAsync(AccountHolder user, Address contractAddress, string methodName, IMessage parameters)
+    protected async Task<Tuple<Hash, Transaction>> CreateContractRawTransactionAsync(AccountHolder user, string contractName,
+        string methodName, IMessage parameters)
     {
-        var status = Client.GetChainStatusAsync().GetAwaiter().GetResult();
+        return await CreateContractRawTransactionAsync(user,
+            await Client.GetContractAddressByNameAsync(HashHelper.ComputeFrom(contractName)),
+            methodName, parameters);
+    }
+
+    protected async Task<Tuple<Hash, Transaction>> CreateContractRawTransactionAsync(AccountHolder user, Address contractAddress,
+        string methodName, IMessage parameters)
+    {
+        var status = await Client.GetChainStatusAsync();
         var height = status.BestChainHeight;
         var blockHash = status.BestChainHash;
 
         // create row transaction
-        var transaction = new Transaction()
+        var transaction = new Transaction
         {
             From = user.AddressObj(),
             To = contractAddress,
@@ -51,12 +64,7 @@ public abstract class ContractInvoker
             {
                 ["transaction"] = transaction,
                 ["parameter"] = parameters
-            }, Settings)}");
+            }, JsonSerializerSettings)}");
         return Tuple.Create(transactionId, transaction);
     }
-
-    
-    
-    
-    
 }
