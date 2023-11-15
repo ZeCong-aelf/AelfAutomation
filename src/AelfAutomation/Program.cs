@@ -100,28 +100,42 @@ namespace AelfAutomation
             
             foreach (var address in loadAddresses)
             {
-                
-                var path = PathHelper.ResolvePath(keyFilePath + "/" + address + ".json");
-                using var textReader = File.OpenText(path);
-                var json = textReader.ReadToEnd();
-                
-                /* read password from console */
-                Console.Write($"input password of account {address}: ");
-                var pwd = "";
+
                 while (true)
                 {
-                    var key = Console.ReadKey(true);
-                    if (key.Key == ConsoleKey.Enter)
-                        break;
-                    if (key.Key == ConsoleKey.Backspace && pwd.Length > 0)
-                        pwd = pwd[0..^1];
-                    else if (key.Key != ConsoleKey.Backspace)
-                        pwd += key.KeyChar;
-                }
+                    
+                    var path = PathHelper.ResolvePath(keyFilePath + "/" + address + ".json");
+                    using var textReader = File.OpenText(path);
+                    var json = textReader.ReadToEnd();
                 
-                var privateKey = _keyStoreService.DecryptKeyStoreFromJson(pwd, json);
-                Console.WriteLine("success");
-                _accountHolders[address] = new AccountHolder(privateKey.ToHex());
+                    /* read password from console */
+                    Console.Write($"input password of account {address}: ");
+                    var pwd = "";
+                    while (true)
+                    {
+                        var key = Console.ReadKey(true);
+                        if (key.Key == ConsoleKey.Enter)
+                            break;
+                        if (key.Key == ConsoleKey.Backspace && pwd.Length > 0)
+                            pwd = pwd[0..^1];
+                        else if (key.Key != ConsoleKey.Backspace)
+                            pwd += key.KeyChar;
+                    }
+
+                    try
+                    {
+                        var privateKey = _keyStoreService.DecryptKeyStoreFromJson(pwd, json);
+                        Console.WriteLine("Success!");
+                        _accountHolders[address] = new AccountHolder(privateKey.ToHex());
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("FAILED");
+                        continue;
+                    }
+                }
+
             }
         }
         
